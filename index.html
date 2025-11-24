@@ -1,47 +1,68 @@
-const CACHE_NAME = "prompt-vault-cache-v1";
-const OFFLINE_URLS = [
-  "./",
-  "index.html",
-  "style.css",
-  "app.js",
-  "manifest.webmanifest",
-  "icon-192.png",
-  "icon-512.png"
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prompt Vault</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(OFFLINE_URLS);
-    })
-  );
-});
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0f766e" />
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
-  );
-});
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Prompt Vault</h1>
+    <button id="installBtn" class="btn secondary" hidden>Install app</button>
+  </header>
 
-self.addEventListener("fetch", (event) => {
-  const { request } = event;
-  if (request.method !== "GET") return;
+  <main class="app-main">
+    <section class="card">
+      <h2>Add / Edit Prompt</h2>
+      <form id="promptForm">
+        <input type="hidden" id="promptId" />
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).catch(() => {
-        // fallback for navigation requests
-        if (request.mode === "navigate") {
-          return caches.match("index.html");
-        }
-      });
-    })
-  );
-});
+        <label class="field">
+          <span>Title</span>
+          <input id="promptTitle" type="text" placeholder="e.g. Code review prompt" required />
+        </label>
+
+        <label class="field">
+          <span>Prompt text</span>
+          <textarea id="promptText" rows="6" placeholder="Paste or write your AI prompt here..." required></textarea>
+        </label>
+
+        <label class="field">
+          <span>Tag (optional)</span>
+          <input id="promptTag" type="text" placeholder="e.g. coding, teaching, netball" />
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Save prompt</button>
+          <button type="button" id="clearFormBtn" class="btn subtle">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="list-header">
+        <h2>Saved Prompts</h2>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search by title, tag, or text..."
+        />
+      </div>
+      <div id="promptList" class="prompt-list">
+        <!-- Prompts will be rendered here -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <small>Prompts are stored on this device only.</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

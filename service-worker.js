@@ -1,12 +1,12 @@
 const CACHE_NAME = "prompt-vault-cache-v1";
 const OFFLINE_URLS = [
-  "./",
-  "index.html",
-  "style.css",
-  "app.js",
-  "manifest.webmanifest",
-  "icon-192.png",
-  "icon-512.png"
+  "/Prompt-Organiser/",
+  "/Prompt-Organiser/index.html",
+  "/Prompt-Organiser/style.css",
+  "/Prompt-Organiser/app.js",
+  "/Prompt-Organiser/manifest.webmanifest",
+  "/Prompt-Organiser/icon-192.png",
+  "/Prompt-Organiser/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -39,7 +39,7 @@ self.addEventListener("fetch", (event) => {
       return fetch(request).catch(() => {
         // fallback for navigation requests
         if (request.mode === "navigate") {
-          return caches.match("index.html");
+          return caches.match("/Prompt-Organiser/index.html");
         }
       });
     })
